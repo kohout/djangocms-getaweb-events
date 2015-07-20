@@ -1,0 +1,12 @@
+{% load i18n cmsevents %}
+
+<h1>{{ object.name }}</h1>
+{% if object.tags %}
+  <p><small>{% trans 'Tags' %}:
+  {% for tag in object.tags.all %}
+    {{ tag.name }}{% if not forloop.last %}, {% endif %}
+  {% endfor %}</small></p>
+{% endif %}
+<p>{{ object.get_dates_formatted }}</p>
+{{ object|render_image }}
+<p>{{ object.description|safe }}</p>

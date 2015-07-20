@@ -13,7 +13,7 @@ class EventsPlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         context['instance'] = instance
-        context['items'] = instance.get_items(instance.category)
+        context['items'] = instance.get_items()
         return context
 
 plugin_pool.register_plugin(EventsPlugin)

@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 from cms.models.pluginmodel import CMSPlugin
+from cms.models.pagemodel import Site
 from django.core.urlresolvers import reverse_lazy
 from django.db import models
+from django.db.models.query_utils import Q
+from django.utils.safestring import mark_safe
+from django.utils.timezone import now
 from django.utils.translation import ugettext as _
+from easy_thumbnails.fields import ThumbnailerImageField
 from tinymce.models import HTMLField
 
 
@@ -25,6 +30,7 @@ class Tag(models.Model):
         verbose_name = _(u'Tag')
         verbose_name_plural = _(u'Tags')
 
+
 class Event(models.Model):
     """
     A simple event with some descriptive text.
@@ -33,6 +39,18 @@ class Event(models.Model):
         max_length=255,
         help_text=_(u'Name of the event, e.g. "Music Festival".'),
         verbose_name=_(u'Event name'))
+
+    target_page = models.ForeignKey(
+        Site,
+        blank=True, null=True,
+        help_text=_(u'Event is associated with a certain page.'),
+        verbose_name=_(u'Target Page'))
+
+    image = ThumbnailerImageField(
+        upload_to='djangocms_events/',
+        blank=True, null=True,
+        help_text=_(u'Image of Event.'),
+        verbose_name=_(u'Image'))
 
     description = HTMLField(
         blank=True, null=True,
@@ -67,15 +85,31 @@ class Event(models.Model):
         help_text=_(u'The end time of the event, e.g. "23:59".'),
         verbose_name=_(u'End time'))
 
-    def display_dates(self):
-        start_date = None if self.start_date is None else str(self.start_date)
-        start_time = None if self.start_time is None else str(self.start_time)
-        end_date = None if self.end_date is None else str(self.end_date)
-        end_time = None if self.end_time is None else str(self.end_time)
+    @property
+    def get_dates_formatted(self):
+        start = self.get_start_formatted
+        end = self.get_end_formatted
+        return mark_safe(u' <br /> '.join(filter(None, [start, end])))
 
-        start = u' '.join(filter(None, [start_date, start_time]))
-        end = u' '.join(filter(None, [end_date, end_time]))
-        return u' - '.join(filter(None, [start, end]))
+    @property
+    def get_start_formatted(self):
+        start_date = self.start_date.strftime('%d. %m. %Y') if self.start_date else None
+        start_time = str(self.start_time) if self.start_time else None
+        start = u', '.join(filter(None, [start_date, start_time]))
+        if start:
+            return _(u'Start: ') + start
+        else:
+            return ''
+
+    @property
+    def get_end_formatted(self):
+        end_date = self.end_date.strftime('%d. %m. %Y') if self.end_date else None
+        end_time = str(self.end_time) if self.end_time else None
+        end = u', '.join(filter(None, [end_date, end_time]))
+        if end:
+            return _(u'End: ') + end
+        else:
+            return ''
 
     def get_absolute_url(self):
         return reverse_lazy('event-detail', kwargs={'pk': self.pk})
@@ -86,16 +120,87 @@ class Event(models.Model):
     class Meta:
         verbose_name = _(u'Event')
         verbose_name_plural = _(u'Events')
+        ordering = ['start_date', 'start_time', 'end_date', 'end_time']
+
+
+ARCHIVE_CHOICES = (
+    ('all', _(u'All Events')),
+    ('past', _(u'Past Events')),
+    ('future', _(u'Future Events')),
+)
 
 
 class EventsList(CMSPlugin):
-    category = models.ForeignKey(
+    title = models.CharField(
+        max_length=255,
+        blank=True, null=True,
+        help_text=_(u'The title that is displayed above the events list.'),
+        verbose_name=_(u'Title'))
+
+    category = models.ManyToManyField(
         Tag,
+        blank=True, null=True,
+        help_text=_(u'Only show events with these tags.'),
         verbose_name=_(u'Category'))
 
-    def get_items(self, category):
-        items = Event.objects.filter(tags__in=category)
-        return items
+    archive = models.CharField(
+        choices=ARCHIVE_CHOICES,
+        default=ARCHIVE_CHOICES[0],
+        max_length=50,
+        help_text=_(u'Filter by event dates.'),
+        verbose_name=_(u'Archive mode'))
+
+    max_item_count = models.PositiveIntegerField(
+        default=0,
+        help_text=_(u'Maximum number of items to display. Enter "0" for no boundaries.'),
+        verbose_name=_(u'Max. item count'))
+
+    target_page = models.ForeignKey(
+        Site,
+        blank=True, null=True,
+        help_text=_(u'Only display events associated with this page.'),
+        verbose_name=_(u'Target Page'))
+
+    def get_items(self):
+        items = Event.objects.all()
+        f = Q()
+
+        if self.target_page:
+            f = (Q(target_page=self.target_page))
+
+        if self.archive == 'past':
+            # either no dates entered
+            # or end date entered and end date is in the past
+            # or start date entered (but no end date) and start date is in the past
+            f = f & (
+                (Q(start_date__isnull=True) & Q(end_date__isnull=True)) |
+                (Q(end_date__isnull=False) & Q(end_date__lt=now())) |
+                (Q(end_date__isnull=True) & Q(start_date__isnull=False) & Q(start_date__lt=now()))
+            )
+        elif self.archive == 'future':
+            # either no dates entered
+            # or or end date entered and end date is in the future
+            # or start date entered (but no end date) and start date is in the future
+            f = f & (
+                (Q(start_date__isnull=True) & Q(end_date__isnull=True)) |
+                (Q(end_date__isnull=False) & Q(end_date__gt=now())) |
+                (Q(end_date__isnull=True) & Q(start_date__isnull=False) & Q(start_date__gt=now()))
+            )
+
+        if self.category.all():
+            f = f & Q(tags__in=self.category.all())
+
+        if self.max_item_count > 0:
+            return items.filter(f)[:self.max_item_count]
+
+        return items.filter(f)
+
+    def __unicode__(self):
+        res = self.title if self.title else _(u'Event list')
+        if self.category.all():
+            cats = u', '.join([t.name for t in self.category.all()])
+            res = u''.join(filter(None, [res, u' (', cats, u')']))
+        return res
 
     class Meta:
         verbose_name = _(u'Events List Plugin')

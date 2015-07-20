@@ -1,0 +1,2 @@
+django-tinymce
+easy_thumbnails

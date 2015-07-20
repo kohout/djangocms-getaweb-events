@@ -1,0 +1,21 @@
+{% load i18n %}
+
+<h1>{{ instance.title }}</h1>
+<table>
+  <thead>
+    <tr>
+      <th>{% trans 'Name' %}</th>
+      <th>{% trans 'Description' %}</th>
+      <th>{% trans 'Date' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for event in items %}
+    <tr>
+      <td><a href="{{ event.get_absolute_url }}"><b>{{ event.name }}</b></a></td>
+      <td>{{ event.description|safe }}</td>
+      <td>{{ event.get_dates_formatted }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
