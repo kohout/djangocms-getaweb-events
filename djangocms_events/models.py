@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from cms.models.pluginmodel import CMSPlugin
-from cms.models.pagemodel import Site
+from cms.models.pagemodel import Site, Page
 from django.core.urlresolvers import reverse_lazy
 from django.db import models
 from django.db.models.query_utils import Q
@@ -59,6 +59,25 @@ class Event(models.Model):
                     u'is an open-air free music festival.</p>'),
         verbose_name=_(u'Description'))
 
+    cms_link = models.ForeignKey(
+        Page,
+        blank=True, null=True,
+        help_text=_(u'A link to a page on this website, e.g. "/donauinselfest/".'),
+        verbose_name=_(u'CMS page link'))
+
+    external_link = models.URLField(
+        blank=True, null=True,
+        help_text=_(u'A link that provides further information about the event, e.g. '
+                    u'"https://2015.donauinselfest.at/".'),
+        verbose_name=_(u'External link'))
+
+    link_title = models.CharField(
+        max_length=255,
+        blank=True, null=True,
+        help_text=_(u'Title that is displayed and wrapped with either CMS page link or External link, e.g. '
+                    u'"More information".'),
+        verbose_name=_(u'Link title'))
+
     tags = models.ManyToManyField(
         Tag,
         blank=True, null=True,
@@ -110,6 +129,26 @@ class Event(models.Model):
             return _(u'End: ') + end
         else:
             return ''
+
+    def get_set_link(self):
+        if self.cms_link:
+            return self.cms_link.get_absolute_url()
+        elif self.external_link:
+            return self.external_link
+        else:
+            return None
+
+    def get_link_title(self):
+        return self.link_title if self.link_title else self.get_set_link()
+
+    @property
+    def get_link_str(self):
+        link = self.get_set_link()
+        if not link:
+            return ''
+
+        res = u''.join(['<a href="', link, '" target="_blank">', self.get_link_title(), '</a>'])
+        return mark_safe(res)
 
     def get_absolute_url(self):
         return reverse_lazy('event-detail', kwargs={'pk': self.pk})
