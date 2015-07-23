@@ -55,8 +55,8 @@ class Event(models.Model):
     description = HTMLField(
         blank=True, null=True,
         help_text=_(u'Description of the event containing HTML tags, e.g. '
-                    u'"<p>The <b>Donauinselfest</b> (German for Danube Island Festival) '
-                    u'is an open-air free music festival.</p>'),
+                    u'"The <b>Donauinselfest</b> (German for <i>Danube Island Festival</i>) '
+                    u'is an open-air free music festival.".'),
         verbose_name=_(u'Description'))
 
     cms_link = models.ForeignKey(

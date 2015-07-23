@@ -1,0 +1,236 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-23 12:21+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: admin.py:26 models.py:60 templates/djangocms_events/list.html:8
+msgid "Description"
+msgstr "Beschreibung"
+
+#: admin.py:39
+msgid "Preview"
+msgstr "Vorschau"
+
+#: cms_plugins.py:11
+msgid "Events List"
+msgstr "Eventliste"
+
+#: models.py:20
+msgid ""
+"Name of a tag, e.g. \"Music\", which allow for customized grouping or "
+"filtering."
+msgstr "Name der Kategorie, zum Beispiel \"Musik\", welche individuelle Gruppierungen "
+"oder Filterungen erlauben."
+
+#: models.py:21 templates/djangocms_events/list.html:7
+msgid "Name"
+msgstr "Name"
+
+#: models.py:30
+msgid "Tag"
+msgstr "Kategorie"
+
+#: models.py:31 models.py:85 templates/djangocms_events/detail.html:5
+msgid "Tags"
+msgstr "Kategorien"
+
+#: models.py:40
+msgid "Name of the event, e.g. \"Music Festival\"."
+msgstr "Name des Events, zum Beispiel \"Musik Festival\"."
+
+#: models.py:41
+msgid "Event name"
+msgstr "Event Name"
+
+#: models.py:46
+msgid "Event is associated with a certain page."
+msgstr "Event ist mit einer bestimmten Seite assoziiert."
+
+#: models.py:47 models.py:201
+msgid "Target Page"
+msgstr "Zielseite"
+
+#: models.py:52
+msgid "Image of Event."
+msgstr "Bild des Events."
+
+#: models.py:53
+msgid "Image"
+msgstr "Bild"
+
+#: models.py:57
+msgid ""
+"Description of the event containing HTML tags, e.g. \"The <b>Donauinselfest</"
+"b> (German for <i>Danube Island Festival</i>) is an open-air free music "
+"festival.\"."
+msgstr ""
+"Beschreibung des Events mit HTML tags, zum Beispiel \"Das <b>Donauinselfest</"
+"b> (Englisch: <i>Danube Island Festival</i>) ist ein open-air Musik "
+"Festival mit freiem Eintritt.\"."
+
+#: models.py:65
+msgid "A link to a page on this website, e.g. \"/donauinselfest/\"."
+msgstr "Ein Link zu einer Seite auf dieser Webseite, zum Beispiel \"/donauinselfest/\"."
+
+#: models.py:66
+msgid "CMS page link"
+msgstr "CMS Seitenlink"
+
+#: models.py:70
+msgid ""
+"A link that provides further information about the event, e.g. "
+"\"https://2015.donauinselfest.at/\"."
+msgstr ""
+"Ein Link der mehr Information über das Event liefert, zum Beispiel "
+"\"https://2015.donauinselfest.at/\"."
+
+#: models.py:72
+msgid "External link"
+msgstr "Externer Link"
+
+#: models.py:77
+msgid ""
+"Title that is displayed and wrapped with either CMS page link or External "
+"link, e.g. \"More information\"."
+msgstr ""
+"Angezeigter Titel, der entweder mit dem CMS Seitenlink oder dem Externen Link verknüpft wird, "
+"zum Beispiel \"Weitere Informationen\"."
+
+#: models.py:79
+msgid "Link title"
+msgstr "Link Titel"
+
+#: models.py:84
+msgid ""
+"Tags of the event, e.g. \"Music\", which allow for customized grouping or "
+"filtering."
+msgstr ""
+"Kategorien des Events, zum Beispiel \"Musik\", ermöglichen individuelles gruppieren und "
+"filtern."
+
+#: models.py:89
+msgid "The start date of the event, e.g. \"26. 06. 2015\"."
+msgstr "Das Startdatum des Events, zum Beispiel \"26. 06. 2015\"."
+
+#: models.py:90
+msgid "Start date"
+msgstr "Startdatum"
+
+#: models.py:94
+msgid "The start time of the event, e.g. \"10:00\"."
+msgstr "Die Startzeit des Events, zum Beispiel \"10:00\"."
+
+#: models.py:95
+msgid "Start time"
+msgstr "Startzeit"
+
+#: models.py:99
+msgid "The end date of the event, e.g. \"28. 06. 2015\"."
+msgstr "Das Enddatum des Events, zum Beispiel \"28. 06. 2015\"."
+
+#: models.py:100
+msgid "End date"
+msgstr "Enddatum"
+
+#: models.py:104
+msgid "The end time of the event, e.g. \"23:59\"."
+msgstr "Die Endzeit des Events, zum Beispiel \"23:59\"."
+
+#: models.py:105
+msgid "End time"
+msgstr "Endzeit"
+
+#: models.py:119
+msgid "Start: "
+msgstr "Start: "
+
+#: models.py:129
+msgid "End: "
+msgstr "Ende: "
+
+#: models.py:160
+msgid "Event"
+msgstr "Event"
+
+#: models.py:161
+msgid "Events"
+msgstr "Events"
+
+#: models.py:166
+msgid "All Events"
+msgstr "Alle Events"
+
+#: models.py:167
+msgid "Past Events"
+msgstr "Vergangene Events"
+
+#: models.py:168
+msgid "Future Events"
+msgstr "Zukünftige Events"
+
+#: models.py:176
+msgid "The title that is displayed above the events list."
+msgstr "Der Titel der oberhalb der Eventliste angezeigt wird."
+
+#: models.py:177
+msgid "Title"
+msgstr "Titel"
+
+#: models.py:182
+msgid "Only show events with these tags."
+msgstr "Nur Events aus diesen Kategorien zeigen."
+
+#: models.py:183
+msgid "Category"
+msgstr "Kategorie"
+
+#: models.py:189
+msgid "Filter by event dates."
+msgstr "Nach Event Datum filtern."
+
+#: models.py:190
+msgid "Archive mode"
+msgstr "Archiv Modus"
+
+#: models.py:194
+msgid "Maximum number of items to display. Enter \"0\" for no boundaries."
+msgstr "Maximale anzuzeigende Anzahl an Events. Geben Sie \"0\" ein für keine Beschränkung."
+
+#: models.py:195
+msgid "Max. item count"
+msgstr "Maximale anzuzeigende Anzahl"
+
+#: models.py:200
+msgid "Only display events associated with this page."
+msgstr "Nur Events anzeigen, die mit dieser Seite assoziiert sind."
+
+#: models.py:238
+msgid "Event list"
+msgstr "Eventliste"
+
+#: models.py:245
+msgid "Events List Plugin"
+msgstr "Eventliste Plugin"
+
+#: models.py:246
+msgid "Events List Plugins"
+msgstr "Eventliste Plugins"
+
+#: templates/djangocms_events/list.html:9
+msgid "Date"
+msgstr "Datum"
