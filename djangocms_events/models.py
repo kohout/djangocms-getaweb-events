@@ -40,11 +40,11 @@ class Event(models.Model):
         help_text=_(u'Name of the event, e.g. "Music Festival".'),
         verbose_name=_(u'Event name'))
 
-    target_page = models.ForeignKey(
+    sites = models.ManyToManyField(
         Site,
         blank=True, null=True,
-        help_text=_(u'Event is associated with a certain page.'),
-        verbose_name=_(u'Target Page'))
+        help_text=_(u'Event is associated with a certain site.'),
+        verbose_name=_(u'Site'))
 
     image = ThumbnailerImageField(
         upload_to='djangocms_events/',
@@ -139,7 +139,10 @@ class Event(models.Model):
             return None
 
     def get_link_title(self):
-        return self.link_title if self.link_title else self.get_set_link()
+        if self.cms_link:
+            return self.cms_link.get_page_title()
+        else:
+            return self.link_title if self.link_title else self.get_set_link()
 
     @property
     def get_link_str(self):
@@ -194,18 +197,9 @@ class EventsList(CMSPlugin):
         help_text=_(u'Maximum number of items to display. Enter "0" for no boundaries.'),
         verbose_name=_(u'Max. item count'))
 
-    target_page = models.ForeignKey(
-        Site,
-        blank=True, null=True,
-        help_text=_(u'Only display events associated with this page.'),
-        verbose_name=_(u'Target Page'))
-
-    def get_items(self):
-        items = Event.objects.all()
+    def get_items(self, site):
+        items = Event.objects.filter(sites__id=site.id)
         f = Q()
-
-        if self.target_page:
-            f = (Q(target_page=self.target_page))
 
         if self.archive == 'past':
             # either no dates entered

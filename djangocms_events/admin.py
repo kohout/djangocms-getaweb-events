@@ -14,8 +14,9 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('render_preview', 'name', '_get_description', 'get_dates_formatted')
+    list_display = ('render_preview', 'name', 'start_date')
     list_display_links = ('render_preview', 'name', )
+    list_filter = ('sites', )
     search_fields = ('name', 'description', 'start_date', 'start_time', 'end_date', 'end_time')
     readonly_fields = ('render_preview', )
     form = EventForm
