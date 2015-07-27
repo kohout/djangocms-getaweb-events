@@ -1,21 +1,14 @@
-{% load i18n %}
+{% load i18n cmsevents %}
 
 {% if instance.title %}<h1>{{ instance.title }}</h1>{% endif %}
 {% if items %}
-<table class="events_list">
-  <thead>
-    <tr>
-      <th>{% trans 'Name' %}</th>
-      <th>{% trans 'Description' %}</th>
-      <th>{% trans 'Date' %}</th>
-    </tr>
-  </thead>
+<table>
   <tbody>
   {% for event in items %}
     <tr>
+      <td><a href="{{ event.get_absolute_url }}">{{ event|render_image_preview }}</a></td>
+      <td>{{ event.get_short_start }}</td>
       <td><a href="{{ event.get_absolute_url }}"><b>{{ event.name }}</b></a></td>
-      <td>{{ event.description|safe }}</td>
-      <td>{{ event.get_dates_formatted }}</td>
     </tr>
   {% endfor %}
   </tbody>

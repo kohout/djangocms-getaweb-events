@@ -9,6 +9,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext as _
 from easy_thumbnails.fields import ThumbnailerImageField
 from tinymce.models import HTMLField
+from djangocms_events import settings
 
 
 class Tag(models.Model):
@@ -104,6 +105,15 @@ class Event(models.Model):
         help_text=_(u'The end time of the event, e.g. "23:59".'),
         verbose_name=_(u'End time'))
 
+    if settings.NEWS_CONNECTION:
+        from djangocms_news.models import NewsItem
+
+        associated_news = models.ForeignKey(
+            NewsItem,
+            blank=True, null=True,
+            help_text=_(u'The associated news item.'),
+            verbose_name=_(u'News item'))
+
     @property
     def get_dates_formatted(self):
         start = self.get_start_formatted
@@ -130,6 +140,10 @@ class Event(models.Model):
         else:
             return ''
 
+    @property
+    def get_short_start(self):
+        return self.start_date.strftime('%d.%m.')
+
     def get_set_link(self):
         if self.cms_link:
             return self.cms_link.get_absolute_url()
@@ -153,6 +167,12 @@ class Event(models.Model):
         res = u''.join(['<a href="', link, '" target="_blank">', self.get_link_title(), '</a>'])
         return mark_safe(res)
 
+    def get_news_url(self):
+        if settings.NEWS_CONNECTION and self.associated_news:
+            return self.associated_news.get_absolute_url()
+        else:
+            return ''
+
     def get_absolute_url(self):
         return reverse_lazy('event-detail', kwargs={'pk': self.pk})
 
@@ -171,6 +191,11 @@ ARCHIVE_CHOICES = (
     ('future', _(u'Future Events')),
 )
 
+RENDER_CHOICES = (
+    ('list.html', _(u'List')),
+    ('teaser.html', _(u'Teaser'))
+)
+
 
 class EventsList(CMSPlugin):
     title = models.CharField(
@@ -178,6 +203,13 @@ class EventsList(CMSPlugin):
         blank=True, null=True,
         help_text=_(u'The title that is displayed above the events list.'),
         verbose_name=_(u'Title'))
+
+    render_mode = models.CharField(
+        choices=RENDER_CHOICES,
+        default=RENDER_CHOICES[0],
+        max_length=255,
+        help_text=_(u'How the list of events should be displayed.'),
+        verbose_name=_(u'Display mode'))
 
     category = models.ManyToManyField(
         Tag,
@@ -197,11 +229,17 @@ class EventsList(CMSPlugin):
         help_text=_(u'Maximum number of items to display. Enter "0" for no boundaries.'),
         verbose_name=_(u'Max. item count'))
 
-    def get_items(self, site):
-        items = Event.objects.filter(sites__id=site.id)
+    event_list = models.ForeignKey(
+        Page,
+        blank=True, null=True,
+        help_text=_(u'Page containing a Event List Plugin with Display mode "List"'),
+        verbose_name=_(u'Event list page'))
+
+    def get_items(self, archive_mode, site, tags, search):
+        items = Event.objects.filter(Q(sites__isnull=True) | Q(sites__id__contains=site.id))
         f = Q()
 
-        if self.archive == 'past':
+        if self.archive == 'past' or (self.archive == 'all' and archive_mode == 'past'):
             # either no dates entered
             # or end date entered and end date is in the past
             # or start date entered (but no end date) and start date is in the past
@@ -210,7 +248,7 @@ class EventsList(CMSPlugin):
                 (Q(end_date__isnull=False) & Q(end_date__lt=now())) |
                 (Q(end_date__isnull=True) & Q(start_date__isnull=False) & Q(start_date__lt=now()))
             )
-        elif self.archive == 'future':
+        elif self.archive == 'future' or (self.archive == 'all' and archive_mode == 'future'):
             # either no dates entered
             # or or end date entered and end date is in the future
             # or start date entered (but no end date) and start date is in the future
@@ -222,6 +260,11 @@ class EventsList(CMSPlugin):
 
         if self.category.all():
             f = f & Q(tags__in=self.category.all())
+
+        if tags:
+            f = f & Q(tags__in=tags)
+        if search:
+            f = f & (Q(name__icontains=search) | Q(description__icontains=search))
 
         if self.max_item_count > 0:
             return items.filter(f)[:self.max_item_count]
@@ -238,3 +281,22 @@ class EventsList(CMSPlugin):
     class Meta:
         verbose_name = _(u'Events List Plugin')
         verbose_name_plural = _(u'Events List Plugins')
+
+
+class EventTagList(CMSPlugin):
+    title = models.CharField(
+        max_length=255,
+        blank=True, null=True,
+        help_text=_(u'The title that is displayed above the tag list.'),
+        verbose_name=_(u'Title'))
+
+    def get_items(self):
+        items = Tag.objects.all()
+        return items
+
+    def __unicode__(self):
+        return self.title or 'TagList'
+
+    class Meta:
+        verbose_name = _(u'Tag List Plugin')
+        verbose_name_plural = _(u'Tag List Plugins')

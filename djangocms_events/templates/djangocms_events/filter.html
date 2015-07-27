@@ -1,0 +1,17 @@
+{% load i18n sekizai_tags staticfiles cmsevents %}
+
+{% addtoblock 'js' %}
+  <script type="text/javascript" src="{% static 'djangocms_events/djangocms_events.js' %}"></script>
+{% endaddtoblock %}
+
+{% if instance.title %}<h3>{{ instance.title }}</h3>{% endif %}
+<form action="." method="GET" class="events_filter {% filter_via_ajax %}">
+  <input type="search" id="search" name="search" placeholder="{% trans 'Search' %}">
+  {% for tag in filter_tags %}
+    <p>
+      <input id="{{ tag.name }}" type="checkbox" name="tags" value="{{ tag.pk }}" >&nbsp;
+      <label for="{{ tag.name }}">{{ tag.name }}</label>
+    </p>
+  {% endfor %}
+  <button type="submit">Filter</button>
+</form>

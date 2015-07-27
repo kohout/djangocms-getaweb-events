@@ -8,6 +8,6 @@
   {% endfor %}</small></p>
 {% endif %}
 <p>{{ object.get_dates_formatted }}</p>
-{{ object|render_image }}
+{{ object|render_image_detail }}
 <p>{{ object.description|safe }}</p>
 <p>{{ object.get_link_str }}</p>
