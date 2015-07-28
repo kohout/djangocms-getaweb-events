@@ -11,3 +11,16 @@
 {{ object|render_image_detail }}
 <p>{{ object.description|safe }}</p>
 <p>{{ object.get_link_str }}</p>
+<hr />
+{% if next %}
+  <a href="{{ next.get_absolute_url }}"
+     title="{{ next.name }}">
+     Weiter
+  </a>
+{% endif %}
+{% if previous %}
+  <a href="{{ previous.get_absolute_url }}"
+     title="{{ previous.name }}">
+    Zurück
+  </a>
+{% endif %}
