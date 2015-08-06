@@ -206,7 +206,7 @@ class EventsList(CMSPlugin):
 
     render_mode = models.CharField(
         choices=RENDER_CHOICES,
-        default=RENDER_CHOICES[0],
+        default=RENDER_CHOICES[0][0],
         max_length=255,
         help_text=_(u'How the list of events should be displayed.'),
         verbose_name=_(u'Display mode'))
