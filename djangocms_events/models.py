@@ -41,6 +41,12 @@ class Event(models.Model):
         help_text=_(u'Name of the event, e.g. "Music Festival".'),
         verbose_name=_(u'Event name'))
 
+    highlight = models.BooleanField(
+        default=False,
+        help_text=_(u'Whether event should be highlighted in teaser list.'),
+        verbose_name=_(u'Is highlight')
+    )
+
     sites = models.ManyToManyField(
         Site,
         blank=True, null=True,
@@ -266,10 +272,20 @@ class EventsList(CMSPlugin):
         if search:
             f = f & (Q(name__icontains=search) | Q(description__icontains=search))
 
-        if self.max_item_count > 0:
-            return items.filter(f)[:self.max_item_count]
+        result = items.filter(f)
 
-        return items.filter(f)
+        if self.max_item_count > 0:
+            result = result[:self.max_item_count]
+
+        # get first highlight item, put it at beginning
+        if self.render_mode == 'teaser.html':
+            result = list(result)
+            for idx, val in enumerate(result):
+                if val.highlight:
+                    result.insert(0, result.pop(idx))
+                    return result
+
+        return result
 
     def __unicode__(self):
         res = self.title if self.title else _(u'Event list')
